@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en" class=""> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsightIncome: Income Predictor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply transition-colors duration-300 ease-in-out antialiased;
+        }
+
+        /* --- MODERN_UI_UPDATE: Refined Color Variables --- */
+        :root {
+            /* Light Mode */
+            --bg-body-light: #f8fafc; /* Tailwind slate-50 - Very light, clean */
+            --bg-body-gradient-to-light: #f1f5f9; /* Tailwind slate-100 */
+            --bg-card-light: #ffffff; /* Pure white for cards */
+            --text-primary-light: #0f172a; /* Tailwind slate-900 - Strong contrast */
+            --text-secondary-light: #475569; /* Tailwind slate-600 */
+            --text-tertiary-light: #64748b; /* Tailwind slate-500 */
+            --border-color-light: #e2e8f0; /* Tailwind slate-200 - Softer borders */
+            --input-bg-light: #ffffff;
+            --input-border-light: #cbd5e1; /* Tailwind slate-300 */
+            --input-text-light: #1e293b; /* Tailwind slate-800 */
+            --input-placeholder-light: #94a3b8; /* Tailwind slate-400 */
+            /* MODERN_UI_UPDATE: Header with a more subtle, modern gradient or solid color */
+            --header-bg-light: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); /* Indigo gradient */
+            --header-text-light: #ffffff;
+            --header-subtext-light: #e0e7ff; /* Lighter indigo for subtext */
+            --btn-primary-bg-light: #4f46e5; /* Tailwind indigo-600 - Vibrant */
+            --btn-primary-hover-bg-light: #4338ca; /* Tailwind indigo-700 */
+            --btn-primary-text-light: #ffffff;
+            --btn-secondary-bg-light: #e2e8f0; /* Tailwind slate-200 */
+            --btn-secondary-hover-bg-light: #cbd5e1; /* Tailwind slate-300 */
+            --btn-secondary-text-light: #334155; /* Tailwind slate-700 */
+            --result-bg-light: #eef2ff; /* Tailwind indigo-50 - Very light */
+            --result-border-light: #c7d2fe; /* Tailwind indigo-200 */
+            --result-header-text-light: #4338ca; /* Tailwind indigo-700 */
+            --result-value-text-light: #3730a3; /* Tailwind indigo-800 - Deep and rich */
+            --footer-bg-light: #ffffff;
+            --icon-color-light: #f59e0b; /* Tailwind amber-500 for sun - Kept for consistency */
+            --checkbox-bg-light: #f8fafc; /* Tailwind slate-50 - Consistent with body */
+        }
+
+        /* Dark Mode */
+        .dark {
+            --bg-body-dark: #0f172a; /* Tailwind slate-900 - Deep dark */
+            --bg-body-gradient-to-dark: #1e293b; /* Tailwind slate-800 */
+            --bg-card-dark: #1e293b; /* Tailwind slate-800 - Card distinct from deepest bg */
+            --text-primary-dark: #f1f5f9; /* Tailwind slate-100 - Bright */
+            --text-secondary-dark: #94a3b8; /* Tailwind slate-400 */
+            --text-tertiary-dark: #64748b; /* Tailwind slate-500 */
+            --border-color-dark: #334155; /* Tailwind slate-700 - Softer dark borders */
+            --input-bg-dark: #1e293b; /* Tailwind slate-800 */
+            --input-border-dark: #475569; /* Tailwind slate-600 */
+            --input-text-dark: #f1f5f9; /* Tailwind slate-100 */
+            --input-placeholder-dark: #64748b; /* Tailwind slate-500 */
+            --header-bg-dark: linear-gradient(135deg, #3730a3 0%, #312e81 100%); /* Darker, sophisticated indigo gradient */
+            --header-text-dark: #e0e7ff; /* Light indigo for text */
+            --header-subtext-dark: #c7d2fe; /* Even lighter for subtext */
+            --btn-primary-bg-dark: #6366f1; /* Tailwind indigo-500 - Vibrant against dark */
+            --btn-primary-hover-bg-dark: #4f46e5; /* Tailwind indigo-600 */
+            --btn-primary-text-dark: #ffffff;
+            --btn-secondary-bg-dark: #334155; /* Tailwind slate-700 */
+            --btn-secondary-hover-bg-dark: #475569; /* Tailwind slate-600 */
+            --btn-secondary-text-dark: #cbd5e1; /* Tailwind slate-300 */
+            --result-bg-dark: #28324f; /* Deeper indigo/slate blend */
+            --result-border-dark: #4f46e5; /* Tailwind indigo-600 */
+            --result-header-text-dark: #a5b4fc; /* Tailwind indigo-300 */
+            --result-value-text-dark: #c7d2fe; /* Tailwind indigo-200 */
+            --footer-bg-dark: #0f172a; /* Deepest dark for footer */
+            --icon-color-dark: #818cf8; /* Tailwind indigo-400 for moon - Clear and calm */
+            --checkbox-bg-dark: #1e293b; /* Tailwind slate-800 */
+        }
+
+        /* Applying variables */
+        body {
+            background-color: var(--bg-body-light);
+            background-image: linear-gradient(to bottom right, var(--bg-body-light), var(--bg-body-gradient-to-light));
+            color: var(--text-primary-light); /* MODERN_UI_UPDATE: Default body text color */
+        }
+        .dark body {
+            background-color: var(--bg-body-dark);
+            background-image: linear-gradient(to bottom right, var(--bg-body-dark), var(--bg-body-gradient-to-dark));
+            color: var(--text-primary-dark); /* MODERN_UI_UPDATE: Default body text color for dark mode */
+        }
+
+        /* MODERN_UI_UPDATE: Refined shadow for a more subtle lift and slightly larger rounding */
+        .card-bg {
+            background-color: var(--bg-card-light);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05), 0 4px 6px -4px rgba(0,0,0,0.05); /* Softer shadow */
+            @apply rounded-xl; /* Consistent rounding with inputs */
+        }
+        .dark .card-bg {
+            background-color: var(--bg-card-dark);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+        }
+
+        .text-primary { color: var(--text-primary-light); }
+        .dark .text-primary { color: var(--text-primary-dark); }
+        .text-secondary { color: var(--text-secondary-light); }
+        .dark .text-secondary { color: var(--text-secondary-dark); }
+        .text-tertiary { color: var(--text-tertiary-light); }
+        .dark .text-tertiary { color: var(--text-tertiary-dark); }
+
+        .border-main { border-color: var(--border-color-light); }
+        .dark .border-main { border-color: var(--border-color-dark); }
+
+        .header-bg { background: var(--header-bg-light); }
+        .dark .header-bg { background: var(--header-bg-dark); }
+        .header-text { color: var(--header-text-light); }
+        .dark .header-text { color: var(--header-text-dark); }
+        .header-subtext { color: var(--header-subtext-light); }
+        .dark .header-subtext { color: var(--header-subtext-dark); }
+
+        .footer-bg { background-color: var(--footer-bg-light); }
+        .dark .footer-bg { background-color: var(--footer-bg-dark); }
+
+        .result-card-bg { background-color: var(--result-bg-light); border: 1px solid var(--result-border-light); }
+        .dark .result-card-bg { background-color: var(--result-bg-dark); border: 1px solid var(--result-border-dark); }
+        /* .result-card-border { border-color: var(--result-border-light); } -- Replaced by border property above */
+        /* .dark .result-card-border { border-color: var(--result-border-dark); } -- Replaced by border property above */
+        .result-header-text { color: var(--result-header-text-light); }
+        .dark .result-header-text { color: var(--result-header-text-dark); }
+        .result-value-text { color: var(--result-value-text-light); }
+        .dark .result-value-text { color: var(--result-value-text-dark); }
+
+        .form-input, .form-select {
+            /* MODERN_UI_UPDATE: Slightly increased padding, consistent rounding, improved focus */
+            @apply w-full px-4 py-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-500 transition-all duration-150 ease-in-out;
+            background-color: var(--input-bg-light);
+            border-color: var(--input-border-light);
+            color: var(--input-text-light);
+        }
+        .form-input::placeholder, .form-select option[disabled] { color: var(--input-placeholder-light); }
+        .dark .form-input, .dark .form-select {
+            background-color: var(--input-bg-dark);
+            border-color: var(--input-border-dark);
+            color: var(--input-text-dark);
+        }
+        .dark .form-input::placeholder, .dark .form-select option[disabled] { color: var(--input-placeholder-dark); }
+
+        .form-label { @apply block text-sm font-medium mb-1.5 text-secondary; }
+        .checkbox-label { @apply ml-2 text-sm text-secondary select-none; } /* Added select-none */
+        .checkbox-container-bg { background-color: var(--checkbox-bg-light); }
+        .dark .checkbox-container-bg { background-color: var(--checkbox-bg-dark); }
+
+        .btn {
+            /* MODERN_UI_UPDATE: Slightly less padding for a sleeker look, refined shadow, consistent rounding */
+            @apply px-6 py-3 rounded-lg font-semibold shadow-md transition-all duration-150 ease-in-out transform hover:scale-102 focus:outline-none focus:ring-2 focus:ring-offset-2 flex items-center justify-center;
+        }
+        .btn svg {
+            @apply mr-2 -ml-1 h-5 w-5; /* Adjusted icon margin */
+        }
+
+        .btn-primary {
+            background-color: var(--btn-primary-bg-light);
+            color: var(--btn-primary-text-light);
+            @apply focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:ring-offset-white dark:focus:ring-offset-slate-900;
+        }
+        .btn-primary:hover { background-color: var(--btn-primary-hover-bg-light); }
+        .dark .btn-primary {
+            background-color: var(--btn-primary-bg-dark);
+            color: var(--btn-primary-text-dark);
+        }
+        .dark .btn-primary:hover { background-color: var(--btn-primary-hover-bg-dark); }
+
+        .btn-secondary {
+            background-color: var(--btn-secondary-bg-light);
+            color: var(--btn-secondary-text-light);
+            border: 1px solid var(--input-border-light); /* MODERN_UI_UPDATE: Adding border for better definition */
+             @apply focus:ring-slate-400 dark:focus:ring-slate-500 focus:ring-offset-white dark:focus:ring-offset-slate-900;
+        }
+        .btn-secondary:hover { background-color: var(--btn-secondary-hover-bg-light); }
+        .dark .btn-secondary {
+            background-color: var(--btn-secondary-bg-dark);
+            color: var(--btn-secondary-text-dark);
+            border: 1px solid var(--input-border-dark);
+        }
+        .dark .btn-secondary:hover { background-color: var(--btn-secondary-hover-bg-dark); }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+        @keyframes fadeInScaleUp {
+            0% { opacity: 0; transform: translateY(10px) scale(0.98); }
+            100% { opacity: 1; transform: translateY(0px) scale(1); }
+        }
+        .result-animation { animation: fadeInScaleUp 0.5s ease-out forwards; }
+
+        /* MODERN_UI_UPDATE: Simplified icon display logic, handled by CSS variables */
+        #sunIconContainer { color: var(--icon-color-light); }
+        #moonIcon { color: var(--icon-color-dark); display: none; } /* Initially hidden */
+
+        .dark #sunIconContainer { display: none; }
+        .dark #moonIcon { display: inline-block; }
+
+        /* MODERN_UI_UPDATE: Improved checkbox styling */
+        .form-checkbox {
+            @apply h-5 w-5 rounded text-indigo-600 dark:text-indigo-500 border-slate-300 dark:border-slate-600 focus:ring-indigo-500 dark:focus:ring-indigo-400 dark:bg-slate-700 dark:checked:bg-indigo-500 dark:checked:border-indigo-500;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 sm:p-6">
+
+    <div class="card-bg rounded-xl w-full max-w-4xl overflow-hidden">
+        <header class="header-bg p-8 sm:p-10 relative">
+            <div class="text-center">
+                <h1 class="text-3xl sm:text-4xl font-bold header-text tracking-tight">InsightIncome 💸</h1>
+                <p class="header-subtext mt-2 text-base sm:text-lg">Unlock Your Potential Annual Income</p>
+            </div>
+            <button id="darkModeToggle" class="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--header-bg-light)] dark:focus:ring-offset-[var(--header-bg-dark)] focus:ring-white transition-colors hover:bg-white/20 dark:hover:bg-black/20" aria-label="Toggle Dark Mode">
+                <span id="sunIconContainer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM12 15c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3zm0-10C7.03 5 3 9.03 3 14s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.91-.11-1.36-.32.99-1.28 1.72-2.42 1.86-1.22.15-2.4-.28-3.29-1.08-.9-.8-1.42-1.93-1.42-3.13 0-1.39.71-2.63 1.83-3.39A6.013 6.013 0 0012 5z"/>
+                    </svg>
+                </span>
+                <span id="moonIcon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 2c-1.82 0-3.53.5-5 1.35 2.99 1.73 5 4.95 5 8.65s-2.01 6.92-5 8.65C6.47 21.5 8.18 22 10 22c5.52 0 10-4.48 10-10S15.52 2 10 2z"/>
+                    </svg>
+                </span>
+            </button>
+        </header>
+
+        <main class="p-6 sm:p-8 md:p-10">
+            <form id="incomeForm" class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div>
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" id="age" name="age" class="form-input" placeholder="e.g., 30" min="18" max="100" required>
+                    </div>
+
+                    <div>
+                        <label for="gender" class="form-label">Gender</label>
+                        <select id="gender" name="gender" class="form-select" required>
+                            <option value="" disabled selected>Select your gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Non-binary">Non-binary</option>
+                            <option value="Prefer not to say">Prefer not to say</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="educationLevel" class="form-label">Education Level</label>
+                        <select id="educationLevel" name="educationLevel" class="form-select" required>
+                            <option value="" disabled selected>Select education level</option>
+                            <option value="High School">High School</option>
+                            <option value="Associate's Degree">Associate's Degree</option>
+                            <option value="Bachelor's">Bachelor's Degree</option>
+                            <option value="Master's">Master's Degree</option>
+                            <option value="PhD">PhD</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="socialMediaUsage" class="form-label">Social Media Usage (Hours/Day)</label>
+                        <input type="number" id="socialMediaUsage" name="socialMediaUsage" class="form-input" placeholder="e.g., 2.5" step="0.1" min="0" max="24" required>
+                    </div>
+
+                     <div>
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" id="city" name="city" class="form-input" placeholder="e.g., New York" required>
+                    </div>
+
+                    <div>
+                        <label for="influenceLevel" class="form-label">Influence Level</label>
+                        <select id="influenceLevel" name="influenceLevel" class="form-select" required>
+                            <option value="" disabled selected>Select influence level</option>
+                            <option value="Not Influential">Not Influential</option>
+                            <option value="Somewhat Influential">Somewhat Influential</option>
+                            <option value="Influential">Influential</option>
+                            <option value="Very Influential">Very Influential</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="productCategory" class="form-label">Primary Product Category Interest</label>
+                        <select id="productCategory" name="productCategory" class="form-select" required>
+                            <option value="" disabled selected>Select product category</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Food">Food & Groceries</option>
+                            <option value="Travel">Travel & Hospitality</option>
+                            <option value="Beauty">Beauty & Personal Care</option>
+                            <option value="Gaming">Gaming</option>
+                            <option value="Books">Books & Literature</option>
+                            <option value="Automotive">Automotive</option>
+                            <option value="Home Goods">Home Goods</option>
+                            <option value="N/A">N/A (Not Applicable)</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="form-label">Social Media Platforms Used Regularly</label>
+                    <div class="checkbox-container-bg grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-4 mt-2 p-5 border-main rounded-lg">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_instagram" name="socialPlatforms" value="Instagram" class="form-checkbox">
+                            <label for="platform_instagram" class="checkbox-label">Instagram</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_facebook" name="socialPlatforms" value="Facebook" class="form-checkbox">
+                            <label for="platform_facebook" class="checkbox-label">Facebook</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_twitter" name="socialPlatforms" value="Twitter" class="form-checkbox">
+                            <label for="platform_twitter" class="checkbox-label">Twitter</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_linkedin" name="socialPlatforms" value="LinkedIn" class="form-checkbox">
+                            <label for="platform_linkedin" class="checkbox-label">LinkedIn</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_tiktok" name="socialPlatforms" value="TikTok" class="form-checkbox">
+                            <label for="platform_tiktok" class="checkbox-label">TikTok</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_snapchat" name="socialPlatforms" value="Snapchat" class="form-checkbox">
+                            <label for="platform_snapchat" class="checkbox-label">Snapchat</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_pinterest" name="socialPlatforms" value="Pinterest" class="form-checkbox">
+                            <label for="platform_pinterest" class="checkbox-label">Pinterest</label>
+                        </div>
+                        <div class="flex items-center">
+                            <input type="checkbox" id="platform_other" name="socialPlatforms" value="Other" class="form-checkbox">
+                            <label for="platform_other" class="checkbox-label">Other</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
+                    <button type="submit" class="btn btn-primary w-full sm:w-auto">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                        </svg>
+                        Predict Income
+                    </button>
+                    <button type="reset" id="resetButton" class="btn btn-secondary w-full sm:w-auto">
+                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm1 14a1 1 0 011-1h5.001a5.002 5.002 0 004.001-7.899 1 1 0 111.885-.666A7.002 7.002 0 015.899 15H3a1 1 0 010-2h2.101a5.002 5.002 0 00-1.001-2.447 1 1 0 111.732-1.001A3.002 3.002 0 017 13H5a1 1 0 01-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        Reset Form
+                    </button>
+                </div>
+            </form>
+
+            <div id="resultArea" class="mt-10 text-center hidden">
+                <div class="result-card-bg p-6 sm:p-8 rounded-lg shadow-lg result-animation">
+                    <h3 class="text-xl sm:text-2xl font-semibold result-header-text mb-3">Predicted Annual Income:</h3>
+                    <p id="predictedIncome" class="text-4xl sm:text-5xl font-bold result-value-text tracking-tight"></p>
+                </div>
+            </div>
+
+            <div class="mt-12 pt-8 border-t border-main">
+                <h3 class="text-xl sm:text-2xl font-semibold text-primary text-center mb-6">How InsightIncome Works</h3>
+                <p class="text-secondary text-base text-center max-w-2xl mx-auto leading-relaxed">
+                    InsightIncome uses a sophisticated machine learning model (Random Forest) trained on diverse demographic and social media usage patterns to estimate potential annual income. Key factors influencing the prediction include your age, education level, daily hours on social media, preferred platforms, and more. Provide accurate inputs for the most insightful estimation!
+                    <br> <em class="text-xs text-tertiary mt-2 block"> (Note: This is a simplified simulation for demonstration purposes.)</em>
+                </p>
+                <div class="mt-8 text-center">
+                    <a href="#" onclick="event.preventDefault(); showModal('Model Details', 'Detailed feature insights and model specifics would be presented here in a full application. This could include interactive charts showing feature importance (e.g., from an R script), data distributions, and confidence intervals for the predictions. For now, this is a placeholder for such advanced information.');" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium text-base group">
+                        Learn more about the model & data insights <span class="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">&rarr;</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center p-6 sm:p-8 footer-bg border-t border-main">
+            <p class="text-sm text-tertiary">
+                InsightIncome Predictor &copy; 2025. A project by The Algorithm Alchemists (Saurabh Parihar, Suhani Aswal, Shraddha Sharma).
+                <br>Inspired by projects at Graphic Era Deemed University, Dehradun.
+            </p>
+        </footer>
+    </div>
+
+    <div id="infoModal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 transition-opacity duration-300 ease-in-out opacity-0">
+        <div id="modalContent" class="bg-card-light dark:bg-card-dark p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-lg transform transition-all duration-300 ease-in-out scale-95">
+            <div class="flex justify-between items-center mb-4">
+                <h2 id="modalTitle" class="text-xl font-semibold text-primary">Modal Title</h2>
+                <button id="closeModalButton" class="text-secondary hover:text-primary dark:hover:text-primary-dark" aria-label="Close modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <p id="modalBody" class="text-secondary text-sm sm:text-base leading-relaxed"></p>
+            <div class="mt-6 text-right">
+                <button id="okModalButton" class="btn btn-primary py-2 px-4">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('incomeForm');
+        const resultArea = document.getElementById('resultArea');
+        const predictedIncomeEl = document.getElementById('predictedIncome');
+        const resetButton = document.getElementById('resetButton');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const sunIconContainer = document.getElementById('sunIconContainer'); // This is a span now
+        const moonIcon = document.getElementById('moonIcon'); // This is a span now
+        const htmlElement = document.documentElement;
+
+        // Modal elements
+        const infoModal = document.getElementById('infoModal');
+        const modalContent = document.getElementById('modalContent');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const closeModalButton = document.getElementById('closeModalButton');
+        const okModalButton = document.getElementById('okModalButton');
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                htmlElement.classList.add('dark');
+                // CSS handles icon visibility now via .dark #sunIconContainer and .dark #moonIcon
+            } else {
+                htmlElement.classList.remove('dark');
+            }
+        }
+
+        // Check local storage for theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            applyTheme(savedTheme === 'dark');
+        } else {
+            // Check system preference if no theme saved
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark);
+            // Optionally save the system preference as the initial theme
+            // localStorage.setItem('theme', prefersDark ? 'dark' : 'light');
+        }
+
+        darkModeToggle.addEventListener('click', () => {
+            const isDark = htmlElement.classList.toggle('dark');
+            applyTheme(isDark); // applyTheme might be redundant here if CSS handles icons, but good for explicit state
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (!form.checkValidity()) {
+                form.reportValidity(); // Shows native browser validation messages
+                return;
+            }
+            // Collect form data
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const educationLevel = document.getElementById('educationLevel').value;
+            const socialMediaUsage = document.getElementById('socialMediaUsage').value;
+            const city = document.getElementById('city').value;
+            const influenceLevel = document.getElementById('influenceLevel').value;
+            const productCategory = document.getElementById('productCategory').value;
+
+            const selectedPlatforms = [];
+            document.querySelectorAll('input[name="socialPlatforms"]:checked').forEach((checkbox) => {
+                selectedPlatforms.push(checkbox.value);
+            });
+            const socialMediaPlatformsString = selectedPlatforms.join(', ') || 'None'; // Handle case with no platforms selected
+
+            // --- Simplified Prediction Logic (Placeholder) ---
+            // This is a mock calculation. A real model would be far more complex.
+            let baseIncome = 30000;
+            const cityFactor = city.toLowerCase() === 'new york' ? 10000 : (city.toLowerCase() === 'dehradun' ? 2000 : 0); // Example city bonus
+            const educationBonuses = {
+                "High School": 0,
+                "Associate's Degree": 5000,
+                "Bachelor's": 10000,
+                "Master's": 20000,
+                "PhD": 30000,
+                "Other": 2000
+            };
+            baseIncome += educationBonuses[educationLevel] || 0;
+            baseIncome += (parseInt(age) > 25 && parseInt(age) < 50) ? 5000 : -1000; // Age factor
+            baseIncome -= parseFloat(socialMediaUsage) * 500; // More usage, less income (simplified)
+            baseIncome += selectedPlatforms.length * 1500; // Platform bonus
+
+            const influenceFactors = {
+                "Not Influential": 0,
+                "Somewhat Influential": 2000,
+                "Influential": 5000,
+                "Very Influential": 10000
+            };
+            baseIncome += influenceFactors[influenceLevel] || 0;
+
+            // Add some randomness
+            const randomFactor = (Math.random() - 0.5) * 10000; // +/- 5k
+            let simulatedPrediction = baseIncome + randomFactor + cityFactor;
+
+            // Ensure prediction is within a reasonable range
+            simulatedPrediction = Math.max(25000, Math.min(simulatedPrediction, 200000));
+            // --- End of Simplified Prediction Logic ---
+
+
+            predictedIncomeEl.textContent = `$${Math.round(simulatedPrediction).toLocaleString()}`;
+            resultArea.classList.remove('hidden');
+            // Ensure animation restarts if already shown
+            const resultCard = resultArea.querySelector('.result-animation');
+            resultCard.classList.remove('result-animation');
+            void resultCard.offsetWidth; // Trigger reflow to restart animation
+            resultCard.classList.add('result-animation');
+
+            resultArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        resetButton.addEventListener('click', function() {
+            // form.reset(); // This is done automatically by type="reset"
+            resultArea.classList.add('hidden');
+            const resultCard = resultArea.querySelector('.result-animation');
+            resultCard.classList.remove('result-animation');
+        });
+
+        // Modal functionality
+        function showModal(title, bodyText) {
+            modalTitle.textContent = title;
+            modalBody.textContent = bodyText;
+            infoModal.classList.remove('hidden');
+            setTimeout(() => { // Allow display:block to take effect before transitioning opacity
+                infoModal.classList.add('opacity-100');
+                modalContent.classList.add('scale-100');
+                modalContent.classList.remove('scale-95');
+            }, 10);
+             // Focus the OK button for accessibility
+            okModalButton.focus();
+        }
+
+        function hideModal() {
+            infoModal.classList.remove('opacity-100');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                 infoModal.classList.add('hidden');
+            }, 300); // Match duration of transition
+        }
+
+        closeModalButton.addEventListener('click', hideModal);
+        okModalButton.addEventListener('click', hideModal);
+        // Close modal on escape key
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !infoModal.classList.contains('hidden')) {
+                hideModal();
+            }
+        });
+        // Close modal on outside click
+        infoModal.addEventListener('click', (event) => {
+            if (event.target === infoModal) {
+                hideModal();
+            }
+        });
+
+    </script>
+
+</body>
+</html>
